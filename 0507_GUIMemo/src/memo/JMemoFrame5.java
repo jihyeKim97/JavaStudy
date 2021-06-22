@@ -1,0 +1,252 @@
+package memo;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import java.awt.Window.Type;
+import java.awt.Toolkit;
+import javax.swing.JLabel;
+import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import java.awt.Font;
+import java.awt.Color;
+import java.awt.GridLayout;
+import javax.swing.JButton;
+import javax.swing.ImageIcon;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.FlowLayout;
+import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+
+public class JMemoFrame5 extends JFrame {
+	// 컬러 선택 
+	public static final Color CR_WHITE = Color.WHITE;
+	public static final Color CR_BLACK = Color.black;
+	public static final Color CR_GRAY = Color.gray;
+	public static final Color CR_RED = Color.red;
+	public static final Color CR_GREEN = Color.GREEN;
+	public static final Color CR_BLUE = Color.BLUE;
+	public static final Color CR_ORANGE = new Color(247, 222, 220); // colorzilla 
+	
+	// 현재 메모장에 활성화된 컬러를 기억하는 필드
+	Color activeColor;
+	
+	// 컬러 라디오 버튼들 전용 공통 이벤트 핸들러 내부 클래스
+	// (내부클래스는 외부 클래스의 모든 자원에 접근이 된다.)
+	private class ColorSelectHandler implements ItemListener {
+
+		@Override
+		public void itemStateChanged(ItemEvent e) {
+			JRadioButton rdColor = (JRadioButton)e.getItemSelectable();
+			if( rdColor.isSelected() ) {
+				System.out.println("색상 팔레트 선택: " 
+						+ rdColor.getText());
+				// 컬러 이름 문자열 비교 (동등성) 
+//				if(  rdColor.getText().equals("검정")) {}
+				switch ( rdColor.getText()) {
+				case "검정": activeColor = CR_BLACK;	break;
+				case "흰색": activeColor = CR_WHITE;	break;
+				case "회색": activeColor = CR_GRAY;	break;
+				case "빨강": activeColor = CR_RED;	break;
+				case "파랑": activeColor = CR_BLUE;	break;
+				case "초록": activeColor = CR_GREEN;	break;
+				case "주황": activeColor = CR_ORANGE;	break;
+				default:
+					System.out.println("없는 컬러 이름!");
+					break;
+				}
+			}
+		}
+		
+	}
+	
+	private JPanel contentPane;
+	JTextArea textArea; // 필드화
+	private final ButtonGroup btnGrpColors = new ButtonGroup();
+	// 라디오버튼 컬러들을 묶는 그룹.
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					JMemoFrame5 frame = new JMemoFrame5();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public JMemoFrame5() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\dev2021\\java_ws\\GUIMemoProject\\icons\\script_edit.png"));
+		setTitle("My \uBA54\uBAA8\uC7A5");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 560, 496);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(new BorderLayout(0, 0));
+		setContentPane(contentPane);
+		
+		// 초기 컬러 설정
+		this.activeColor = CR_BLACK;
+		
+		JLabel lbStatus = new JLabel("상태바::");
+		lbStatus.setFont(new Font("휴먼매직체", Font.BOLD | Font.ITALIC, 18));
+		contentPane.add(lbStatus, BorderLayout.SOUTH);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		contentPane.add(scrollPane, BorderLayout.CENTER);
+		
+		//JTextArea textArea = new JTextArea(); // 지역
+		textArea = new JTextArea(); // 필드화
+		textArea.setFont(new Font("바탕", Font.PLAIN, 18));
+		scrollPane.setViewportView(textArea);// 스크롤페인의 뷰포트 영역에 텍스트에어리어를 배치 
+		
+		JPanel panel = new JPanel();
+		panel.setBackground(Color.CYAN);
+		contentPane.add(panel, BorderLayout.WEST);
+		//panel.setLayout(new GridLayout(6, 1, 0, 0)); // 6행 1열
+		panel.setLayout(new GridLayout(0, 1, 0, 0)); // N행 1열
+		// 왼쪽영역 세로툴바를 jpanel로 구현중... 그리드 
+		
+		JButton btnNewButton = new JButton("");
+		// addActionListener 이벤트 처리용 리스너 등록
+		// 익명객체 (인터페이스하나만을 구현한 이름없는 객체가 즉시 생성되어 
+		// 인자로 입력됨) ==> 이 버튼만의 전용 이벤트 처리 객체가 등록됨.
+		btnNewButton.addActionListener(
+			new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					System.out.println("전경색 변경: " + activeColor);
+					//this. // 익명객체 자신
+					textArea.setForeground(activeColor);
+				}
+			}
+		);
+		btnNewButton.setIcon(new ImageIcon("C:\\dev2021\\java_ws\\GUIMemoProject\\icons\\style_edit.png"));
+		btnNewButton.setToolTipText("\uC804\uACBD\uC0C9 \uBCC0\uACBD");
+		panel.add(btnNewButton);
+		
+		JButton btnNewButton_1 = new JButton("");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("배경색 변경: " + activeColor);
+				textArea.setBackground(activeColor);
+			}
+		});
+		btnNewButton_1.setIcon(new ImageIcon("C:\\dev2021\\java_ws\\GUIMemoProject\\icons\\paintcan.png"));
+		btnNewButton_1.setToolTipText("\uBC30\uACBD\uC0C9 \uBCC0\uACBD");
+		panel.add(btnNewButton_1);
+		
+		JButton btnNewButton_2 = new JButton("");
+		btnNewButton_2.setIcon(new ImageIcon("C:\\dev2021\\java_ws\\GUIMemoProject\\icons\\book_open.png"));
+		btnNewButton_2.setToolTipText("\uBA54\uBAA8 \uC77D\uC5B4\uC624\uAE30");
+		panel.add(btnNewButton_2);
+		
+		JButton btnNewButton_3 = new JButton("");
+		btnNewButton_3.setIcon(new ImageIcon("C:\\dev2021\\java_ws\\GUIMemoProject\\icons\\script_save.png"));
+		btnNewButton_3.setToolTipText("\uBA54\uBAA8 \uC800\uC7A5\uD558\uAE30");
+		panel.add(btnNewButton_3);
+		
+		JLabel lblNewLabel = new JLabel("");
+		panel.add(lblNewLabel);
+		
+		JButton btnNewButton_4 = new JButton("");
+		btnNewButton_4.setIcon(new ImageIcon("C:\\dev2021\\java_ws\\GUIMemoProject\\icons\\heart.png"));
+		btnNewButton_4.setToolTipText("My\uBA54\uBAA8\uC7A5 \uB300\uD558\uC5EC...");
+		panel.add(btnNewButton_4);
+		
+		JPanel panelTop = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panelTop.getLayout();
+		flowLayout.setAlignment(FlowLayout.LEFT);
+		panelTop.setBackground(Color.CYAN);
+		contentPane.add(panelTop, BorderLayout.NORTH);
+		
+		JLabel label = new JLabel("My \uBA54\uBAA8\uC7A5::");
+		label.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+		panelTop.add(label);
+		
+		
+		// 컬러들...
+		
+		JPanel pnColors = new JPanel();
+		panelTop.add(pnColors);
+		
+		ColorSelectHandler crHalder = new ColorSelectHandler();
+		
+		JRadioButton rdBlack = new JRadioButton("\uAC80\uC815");		
+//		rdBlack.addItemListener(new ItemListener() {
+//			public void itemStateChanged(ItemEvent e) {
+//				//activeColor = CR
+//			}
+//		});
+		btnGrpColors.add(rdBlack);
+		rdBlack.setFont(new Font("휴먼아미체", Font.BOLD, 18));
+		rdBlack.setForeground(Color.WHITE);
+		rdBlack.setBackground(Color.BLACK);
+		pnColors.add(rdBlack);
+		rdBlack.setSelected(true);// 초기 선택된 상태
+		rdBlack.addItemListener(crHalder);
+		
+		JRadioButton rdWhite = new JRadioButton("\uD770\uC0C9");
+		btnGrpColors.add(rdWhite);
+		rdWhite.setFont(new Font("휴먼아미체", Font.BOLD, 18));
+		rdWhite.setBackground(Color.WHITE);
+		pnColors.add(rdWhite);
+		rdWhite.addItemListener(crHalder);
+		
+		JRadioButton rdGray = new JRadioButton("\uD68C\uC0C9");
+		btnGrpColors.add(rdGray);
+		rdGray.setFont(new Font("휴먼아미체", Font.BOLD, 18));
+		rdGray.setBackground(Color.GRAY);
+		pnColors.add(rdGray);
+		rdGray.addItemListener(crHalder);
+		
+		JRadioButton rdRed = new JRadioButton("\uBE68\uAC15");
+		btnGrpColors.add(rdRed);
+		rdRed.setFont(new Font("휴먼아미체", Font.BOLD, 18));
+		rdRed.setBackground(Color.RED);
+		pnColors.add(rdRed);
+		rdRed.addItemListener(crHalder);
+		
+		JRadioButton rdGreen = new JRadioButton("\uCD08\uB85D");
+		btnGrpColors.add(rdGreen);
+		rdGreen.setFont(new Font("휴먼아미체", Font.BOLD, 18));
+		rdGreen.setBackground(Color.GREEN);
+		pnColors.add(rdGreen);
+		rdGreen.addItemListener(crHalder);
+		
+		JRadioButton rdBlue = new JRadioButton("\uD30C\uB791");
+		btnGrpColors.add(rdBlue);
+		rdBlue.setFont(new Font("휴먼아미체", Font.BOLD, 18));
+		rdBlue.setBackground(Color.BLUE);
+		pnColors.add(rdBlue);
+		rdBlue.addItemListener(crHalder);
+		
+		JRadioButton rdOrange = new JRadioButton("\uC8FC\uD669");
+		btnGrpColors.add(rdOrange);
+		rdOrange.setFont(new Font("휴먼아미체", Font.BOLD, 18));
+		rdOrange.setBackground(Color.ORANGE);
+		pnColors.add(rdOrange);
+		rdOrange.addItemListener(crHalder);
+			
+		
+		
+	}
+
+}
